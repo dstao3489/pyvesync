@@ -227,28 +227,12 @@ class Helpers:
                 orig_list = updated_list
             else:
                 # Add new devices not in list but found in the update
-                for new_device in updated_list:
-                    was_found = False
-
-                    for device in orig_list:
-                        if new_device.cid == device.cid:
-                            was_found = True
-                            break
-
-                    if not was_found:
-                        orig_list.append(new_device)
+                # Returns as a new set
+                orig_list = orig_list.union(updated_list)
 
                 # Remove old devices in the list not found in the update
-                for device in orig_list:
-                    should_remove = True
-
-                    for new_device in updated_list:
-                        if device.cid == new_device.cid:
-                            should_remove = False
-                            break
-
-                    if should_remove:
-                        orig_list.remove(device)
+                # Returns as a new set
+                orig_list = orig_list.intersection(updated_list)
 
             # Call update on each device in the list
             [device.update() for device in orig_list]

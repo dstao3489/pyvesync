@@ -25,9 +25,11 @@ class VeSyncBaseDevice(object):
         self.current_firm_version = None
 
     def __eq__(self, other):
+        print("comparing %s against %s" % (self.cid, other.cid))
         return other.cid == self.cid
 
     def __hash__(self):
+        print("hashing %s" % (self.cid))
         return hash(self.cid)
 
     def set_config(self, details):

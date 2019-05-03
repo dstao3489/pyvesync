@@ -40,9 +40,9 @@ class VeSync(object):
         self.token = None
         self.account_id = None
         self.devices = None
-        self.outlets = None
-        self.switches = None
-        self.fans = None
+        self.outlets = set()
+        self.switches = set()
+        self.fans = set()
         self.enabled = False
         self.update_interval = API_RATE_LIMIT
         self.last_update_ts = None
@@ -73,9 +73,9 @@ class VeSync(object):
             self._energy_update_interval = new_energy_update
 
     def process_devices(self, devices) -> tuple:
-        outlets = []
-        switches = []
-        fans = []
+        outlets = set()
+        switches = set()
+        fans = set()
         # bulbs = []
 
         outlet_types = ['wifi-switch-1.3', 'ESW03-USA',
@@ -89,16 +89,16 @@ class VeSync(object):
             cid = dev['cid']
 
             if 'type' in dev and cid:
-                aDevice = VSFactory.getDeviceNew(cid, devType)
+                aDevice = VSFactory.getDevice(cid, devType)
                 aDevice.manager = self
-                aDevice.setConfig(dev)
+                aDevice.set_config(dev)
 
                 if aDevice.device_type in outlet_types:
-                    outlets.append(aDevice)
+                    outlets.add(aDevice)
                 elif aDevice.device_type in fan_types:
-                    fans.append(aDevice)
+                    fans.add(aDevice)
                 elif aDevice.device_type in switch_types:
-                    switches.append(aDevice)
+                    switches.add(aDevice)
                 # elif aDevice.device_type in bulb_types:
                 #    bulbs.append(aDevice)
                 else:
@@ -110,6 +110,21 @@ class VeSync(object):
 
     def get_devices(self) -> list:
         """Return list of VeSync devices"""
+
+        devices = self.get_devices_json()
+
+        if not devices:
+            logger.error('Error retrieving device list')
+            return None
+
+        outlets, switches, fans = self.process_devices(devices)
+
+        return (outlets, switches, fans)
+
+    def get_devices_json(self) -> list:
+        """Return list of VeSync devices from VeSync API"""
+
+        devices = None
 
         if not self.enabled:
             return None
@@ -123,18 +138,22 @@ class VeSync(object):
             json=helpers.req_body(self, 'devicelist')
         )
 
-        if response and helpers.check_response(response, 'get_devices'):
-            if 'result' in response and 'list' in response['result']:
-                device_list = response['result']['list']
-                outlets, switches, fans = self.process_devices(device_list)
-            else:
-                logger.error('Device list in response not found')
-        else:
-            logger.error('Error retrieving device list')
-
         self.in_process = False
 
-        return (outlets, switches, fans)
+        if response and helpers.check_response(response, 'get_devices'):
+            if 'result' in response and 'list' in response['result']:
+                devices = response['result']['list']
+
+        return devices
+
+    # def get_update(self):
+    #     # Get API data
+    #     # For each dev in API data:
+    #         # see if current device exists
+    #             # if it does: deviceOb.set_config(dev)
+    #             # if it does not: create device, deviceOb.set_config(dev)
+    #     # For each dev in current devices:
+    #         # remove any devices not in API data
 
     def login(self) -> bool:
         """Return True if log in request succeeds"""
