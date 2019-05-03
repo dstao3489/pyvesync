@@ -18,17 +18,17 @@ DEFAULT_ENER_UP_INT = 21600
 
 class VSFactory(object):
     @staticmethod
-    def getDevice(device_type, config, manager):
+    def getDevice(cid, device_type):
         if device_type == 'wifi-switch-1.3':
-            return VeSyncOutlet7A(config, manager)
+            return VeSyncOutlet7A(cid)
         elif device_type in ['ESW03-USA', 'ESW10-EU']:
-            return VeSyncOutlet10A(config, manager)
+            return VeSyncOutlet10A(cid)
         elif device_type == 'ESW15-USA':
-            return VeSyncOutlet15A(config, manager)
+            return VeSyncOutlet15A(cid)
         elif device_type in ['ESWL01', 'ESWL03']:
-            return VeSyncWallSwitch(config, manager)
+            return VeSyncWallSwitch(cid)
         elif device_type == 'LV-PUR131S':
-            return VeSyncAir131(config, manager)
+            return VeSyncAir131(cid)
         else:
             logger.debug('Unknown device found - ' + device_type)
 
@@ -86,16 +86,21 @@ class VeSync(object):
 
         for dev in devices:
             devType = dev['deviceType']
+            cid = dev['cid']
 
-            if 'type' in dev:
-                if devType in outlet_types:
-                    outlets.append(VSFactory.getDevice(devType, dev, self))
-                elif devType in fan_types:
-                    fans.append(VSFactory.getDevice(devType, dev, self))
-                elif devType in switch_types:
-                    switches.append(VSFactory.getDevice(devType, dev, self))
-                # elif devType in bulb_types:
-                #    bulbs.append(VSFactory.getDevice(devType, dev, self))
+            if 'type' in dev and cid:
+                aDevice = VSFactory.getDeviceNew(cid, devType)
+                aDevice.manager = self
+                aDevice.setConfig(dev)
+
+                if aDevice.device_type in outlet_types:
+                    outlets.append(aDevice)
+                elif aDevice.device_type in fan_types:
+                    fans.append(aDevice)
+                elif aDevice.device_type in switch_types:
+                    switches.append(aDevice)
+                # elif aDevice.device_type in bulb_types:
+                #    bulbs.append(aDevice)
                 else:
                     logger.debug('Unknown device ' + devType)
             else:

@@ -6,8 +6,8 @@ from abc import ABCMeta, abstractmethod
 class VeSyncSwitch(VeSyncBaseDevice):
     __metaclasss__ = ABCMeta
 
-    def __init__(self, details, manager):
-        super().__init__(details, manager)
+    def __init__(self, cid):
+        super().__init__(cid)
         self.details = {}
 
     def is_dimmable(self):
@@ -38,8 +38,8 @@ class VeSyncSwitch(VeSyncBaseDevice):
 
 
 class VeSyncWallSwitch(VeSyncSwitch):
-    def __init__(self, details, manager):
-        super(VeSyncWallSwitch, self).__init__(details, manager)
+    def __init__(self, cid):
+        super(VeSyncWallSwitch, self).__init__(cid)
 
     def get_details(self):
         body = helpers.req_body(self.manager, 'devicedetail')

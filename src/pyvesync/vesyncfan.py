@@ -4,8 +4,8 @@ from pyvesync.helpers import Helpers as helpers
 
 class VeSyncAir131(VeSyncBaseDevice):
 
-    def __init__(self, details, manager):
-        super(VeSyncAir131, self).__init__(details, manager)
+    def __init__(self, cid):
+        super(VeSyncAir131, self).__init__(cid)
         self.filter_life = {}
         self.details = {}
         self.air_quality = None

@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 class VeSyncOutlet(VeSyncBaseDevice):
     __metaclass__ = ABCMeta
 
-    def __init__(self, details, manager):
-        super(VeSyncOutlet, self).__init__(details, manager)
+    def __init__(self, cid):
+        super(VeSyncOutlet, self).__init__(cid)
 
         self.details = {}
         self.energy = {}
         self.update_energy_ts = None
-        self._energy_update_interval = manager.energy_update_interval
+        # self._energy_update_interval = manager.energy_update_interval  # TODO
 
     @property
     def update_time_check(self) -> bool:
@@ -115,8 +115,8 @@ class VeSyncOutlet(VeSyncBaseDevice):
 
 
 class VeSyncOutlet7A(VeSyncOutlet):
-    def __init__(self, details, manager):
-        super(VeSyncOutlet7A, self).__init__(details, manager)
+    def __init__(self, cid):
+        super(VeSyncOutlet7A, self).__init__(cid)
 
     def get_details(self):
         r, _ = helpers.call_api(
@@ -207,8 +207,8 @@ class VeSyncOutlet7A(VeSyncOutlet):
 
 
 class VeSyncOutlet10A(VeSyncOutlet):
-    def __init__(self, details, manager):
-        super(VeSyncOutlet10A, self).__init__(details, manager)
+    def __init__(self, cid):
+        super(VeSyncOutlet10A, self).__init__(cid)
 
     def get_details(self):
         body = helpers.req_body(self.manager, 'devicedetail')
@@ -320,8 +320,8 @@ class VeSyncOutlet10A(VeSyncOutlet):
 
 
 class VeSyncOutlet15A(VeSyncOutlet):
-    def __init__(self, details, manager):
-        super(VeSyncOutlet15A, self).__init__(details, manager)
+    def __init__(self, cid):
+        super(VeSyncOutlet15A, self).__init__(cid)
 
     def get_details(self):
         body = helpers.req_body(self.manager, 'devicedetail')

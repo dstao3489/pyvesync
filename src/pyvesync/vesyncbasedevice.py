@@ -5,12 +5,12 @@ class VeSyncDeviceException(Exception):
 
 class VeSyncBaseDevice(object):
     """Properties shared across all VeSync devices"""
-    def __init__(self, details, manager):
-        self.manager = manager
+    def __init__(self, cid):
+        self.manager = None
 
         self.device_name = None
         self.device_image = None
-        self.cid = None
+        self.cid = cid
         self.device_status = None
         self.connection_status = None
         self.connection_type = None
@@ -24,12 +24,15 @@ class VeSyncBaseDevice(object):
         self.extension = None
         self.current_firm_version = None
 
-        self.configure(details)
+    def __eq__(self, other):
+        return other.cid == self.cid
 
-    def configure(self, details):
+    def __hash__(self):
+        return hash(self.cid)
+
+    def set_config(self, details):
         self.device_name = details.get('deviceName', None)
         self.device_image = details.get('deviceImg', None)
-        self.cid = details.get('cid', None)
         self.device_status = details.get('deviceStatus', None)
         self.connection_status = details.get('connectionStatus', None)
         self.connection_type = details.get('connectionType', None)
