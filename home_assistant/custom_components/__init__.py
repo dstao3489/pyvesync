@@ -23,7 +23,9 @@ def setup(hass, config):
     """Set up the VeSync component."""
     from pyvesync.vesync import VeSync
 
-    conf = config[DOMAIN]
+    conf = config.get(DOMAIN)
+    if conf is None:
+        return
 
     manager = VeSync(conf.get(CONF_USERNAME), conf.get(CONF_PASSWORD),
                      time_zone=conf.get(CONF_TIME_ZONE))

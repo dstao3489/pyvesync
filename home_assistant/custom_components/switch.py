@@ -51,6 +51,9 @@ class VeSyncSwitchHA(SwitchDevice):
     @property
     def unique_id(self):
         """Return the ID of this switch."""
+        if isinstance(self.smartplug.sub_device_no, int):
+            return ('{}{}'.format(
+                self.smartplug.cid, str(self.smartplug.sub_device_no)))
         return self.smartplug.cid
 
     @property
